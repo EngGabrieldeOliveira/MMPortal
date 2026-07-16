@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import Dashboard from '../pages/Dashboard/Dashboard';
+import ComponentShowcase from '../pages/ComponentShowcase';
 
 // Lazy loading for future modules
 // import Comercial from '../pages/Comercial/Comercial';
@@ -26,6 +27,10 @@ export const router = createBrowserRouter([
       {
         path: 'dashboard',
         element: <Dashboard />,
+      },
+      {
+        path: '__showcase',
+        element: <ComponentShowcase />,
       },
       // Modules will be added here
       // {
