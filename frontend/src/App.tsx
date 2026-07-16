@@ -1,17 +1,9 @@
-import './App.css'
+import { RouterProvider } from 'react-router-dom';
+import { router } from './routes/router';
+import './App.css';
 
 function App() {
-  return (
-    <div className="app">
-      <div className="card">
-        <h1>MMPortal</h1>
-
-        <p>Sistema de Gestão Integrada</p>
-
-        <small>Versão 0.1.0</small>
-      </div>
-    </div>
-  )
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
