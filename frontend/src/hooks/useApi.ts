@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { ApiError } from '../../types/api';
+import type { ApiError } from '../types/api';
 
 export interface UseApiState<T> {
   data: T | null;
@@ -58,7 +58,7 @@ export function useApi<T = any>(
   }, [requestFn, options]);
 
   const refetch = useCallback(
-    async (newParams?: any) => {
+    async () => {
       await execute();
     },
     [execute]

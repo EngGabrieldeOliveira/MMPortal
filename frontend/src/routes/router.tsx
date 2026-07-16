@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
 import Dashboard from '../pages/Dashboard/Dashboard';
 import ComponentShowcase from '../pages/ComponentShowcase';
+import Login from '../pages/Login/Login';
+import PrivateRoute from '../components/common/PrivateRoute';
 
 // Lazy loading for future modules
 // import Comercial from '../pages/Comercial/Comercial';
@@ -16,9 +18,20 @@ import ComponentShowcase from '../pages/ComponentShowcase';
 // import Login from '../pages/Login/Login';
 
 export const router = createBrowserRouter([
+  // Auth routes (sem proteção)
+  {
+    path: '/login',
+    element: <Login />,
+  },
+
+  // Protected routes
   {
     path: '/',
-    element: <MainLayout />,
+    element: (
+      <PrivateRoute>
+        <MainLayout />
+      </PrivateRoute>
+    ),
     children: [
       {
         index: true,
@@ -71,13 +84,10 @@ export const router = createBrowserRouter([
       // },
     ],
   },
-  // Auth routes
-  // {
-  //   path: '/login',
-  //   element: <Login />,
-  // },
+
+  // Fallback
   {
     path: '*',
-    element: <Navigate to="/dashboard" replace />,
+    element: <Navigate to="/login" replace />,
   },
 ]);

@@ -1,5 +1,6 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosError } from 'axios';
-import { ApiResponse, ApiError } from '../../types/api';
+import axios from 'axios';
+import type { AxiosInstance, AxiosError } from 'axios';
+import type { ApiError } from '../../types/api';
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -65,9 +66,12 @@ axiosInstance.interceptors.response.use(
       apiError.message = 'Recurso não encontrado';
     }
 
-    if (error.response?.status >= 500) {
+    if (error.response && error.response.status >= 500) {
       // Server error
       apiError.message = 'Erro no servidor. Tente novamente mais tarde.';
+    } else if (!error.response) {
+      // Network error or no response
+      apiError.message = 'Erro de conexão. Verifique sua internet.';
     }
 
     return Promise.reject(apiError);

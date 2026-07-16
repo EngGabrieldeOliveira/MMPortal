@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ApiError } from '../../types/api';
+import type { ApiError } from '../types/api';
 
 export interface UseFormState<T> {
   values: T;

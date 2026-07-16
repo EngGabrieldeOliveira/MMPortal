@@ -1,5 +1,5 @@
 import axiosInstance from './client';
-import { ApiResponse, PaginatedResponse, ListParams } from '../../types/api';
+import type { ApiResponse, PaginatedResponse, ListParams } from '../../types/api';
 
 /**
  * Generic GET request
@@ -116,7 +116,7 @@ export async function getList<T = any>(
       endpoint,
       { params: queryParams }
     );
-    return response;
+    return response.data;
   } catch (error) {
     throw error;
   }

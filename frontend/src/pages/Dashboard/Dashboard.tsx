@@ -43,13 +43,13 @@ const stats: StatCard[] = [
 
 const chartOptions = {
   chart: {
-    type: 'area',
+    type: 'area' as const,
     toolbar: { show: false },
     sparkline: { enabled: false },
   },
   dataLabels: { enabled: false },
   stroke: {
-    curve: 'smooth',
+    curve: 'smooth' as const,
     width: 2,
   },
   fill: {
@@ -65,7 +65,7 @@ const chartOptions = {
     categories: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'],
   },
   tooltip: {
-    theme: 'light',
+    theme: 'light' as const,
   },
 };
 
