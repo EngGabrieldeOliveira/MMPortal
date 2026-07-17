@@ -14,8 +14,8 @@ class Pedido extends Model
     protected $table = 'pedidos';
 
     protected $fillable = [
-        'numero', 'cliente_id', 'valor_total', 'quantidade_itens', 'status', 'data_pedido',
-        'data_entrega_prevista', 'data_entrega_real', 'observacoes',
+        'numero', 'cliente_id', 'orcamento_id', 'valor_total', 'quantidade_itens', 'status', 'data_pedido',
+        'data_entrega_prevista', 'data_entrega_real', 'prazo_prometido', 'observacoes',
     ];
 
     protected $casts = [

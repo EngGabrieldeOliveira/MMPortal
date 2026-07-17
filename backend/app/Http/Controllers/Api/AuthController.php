@@ -3,54 +3,50 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function login(Request $request): JsonResponse
+    public function login(LoginRequest $request): JsonResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
-
+        $credentials = $request->validated();
         $user = User::where('email', $credentials['email'])->first();
 
         if (! $user || ! Hash::check($credentials['password'], $user->password)) {
-            return response()->json(['message' => 'E-mail ou senha inválidos.'], 422);
+            return $this->failure('E-mail ou senha inválidos.', ['email' => ['As credenciais informadas são inválidas.']]);
         }
 
-        $token = Str::random(60);
-        DB::table('api_tokens')->insert([
-            'user_id' => $user->id,
-            'token' => hash('sha256', $token),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        return $this->success([
+            'token' => $user->createToken('frontend')->plainTextToken,
+            'user' => $this->userData($user),
+        ], 'Login realizado com sucesso.');
+    }
 
-        return response()->json([
-            'token' => $token,
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-            ],
-        ]);
+    public function me(Request $request): JsonResponse
+    {
+        return $this->success($this->userData($request->user()));
     }
 
     public function logout(Request $request): JsonResponse
     {
-        $token = $request->bearerToken();
+        $request->user()?->currentAccessToken()?->delete();
 
-        if ($token) {
-            DB::table('api_tokens')->where('token', hash('sha256', $token))->delete();
-        }
+        return $this->success(null, 'Sessão encerrada com sucesso.');
+    }
 
-        return response()->json(null, 204);
+    public function logoutAll(Request $request): JsonResponse
+    {
+        $request->user()->tokens()->delete();
+
+        return $this->success(null, 'Todas as sessões foram encerradas.');
+    }
+
+    private function userData(User $user): array
+    {
+        return ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => $user->role?->value ?? 'comercial'];
     }
 }

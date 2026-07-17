@@ -19,9 +19,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initAuth = async () => {
       try {
         const storedToken = authService.getStoredToken();
-        const storedUser = authService.getStoredUser();
-
-        if (storedToken && storedUser) {
+        if (storedToken && await authService.checkAuth()) {
+          const storedUser = authService.getStoredUser();
           setState({
             user: storedUser,
             token: storedToken,
@@ -35,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isLoading: false,
           }));
         }
-      } catch (error) {
+      } catch {
         setState((prev) => ({
           ...prev,
           isLoading: false,
@@ -102,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           error: null,
         });
       }
-    } catch (error) {
+    } catch {
       setState({
         user: null,
         token: null,

@@ -3,69 +3,49 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Solicitacao\StoreSolicitacaoRequest;
+use App\Http\Requests\Solicitacao\UpdateSolicitacaoRequest;
 use App\Models\Solicitacao;
+use App\Services\StatusHistoryService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class SolicitacaoController extends Controller
 {
+    public function __construct(private readonly StatusHistoryService $history) {}
+
+    public function index(Request $request): JsonResponse
+    {
+        $status = $request->string('status')->trim()->value();
+        $solicitacoes = Solicitacao::with('cliente')->when($status, fn ($query) => $query->where('status', $status), fn ($query) => $query->whereNotIn('status', ['convertida', 'encerrada']))->latest()->paginate(min(max($request->integer('limit', 10), 1), 100));
+
+        return $this->success($solicitacoes);
+    }
+
+    public function store(StoreSolicitacaoRequest $request): JsonResponse
+    {
+        $solicitacao = Solicitacao::create($request->validated() + ['codigo' => 'SOL-'.str_pad((string) ((int) Solicitacao::max('id') + 1), 6, '0', STR_PAD_LEFT)]);
+        $this->history->record($solicitacao, null, 'nova');
+
+        return $this->success($solicitacao, 'Solicitação criada com sucesso.', 201);
+    }
+
     public function show(Solicitacao $solicitacao): JsonResponse
     {
-        $solicitacao->load('cliente');
-        $solicitacao->setAttribute('anexos', DB::table('solicitacao_anexos')->where('solicitacao_id', $solicitacao->id)->latest()->get());
-        return response()->json($solicitacao);
+        $solicitacao->load('cliente')->setAttribute('anexos', $solicitacao->anexos()->latest()->get());
+
+        return $this->success($solicitacao);
     }
 
-    public function renomearAnexo(Request $request, Solicitacao $solicitacao, int $anexo): JsonResponse
+    public function update(UpdateSolicitacaoRequest $request, Solicitacao $solicitacao): JsonResponse
     {
-        $dados = $request->validate(['nome_original' => ['required', 'string', 'max:255']]);
-        $atualizado = DB::table('solicitacao_anexos')
-            ->where('id', $anexo)
-            ->where('solicitacao_id', $solicitacao->id)
-            ->update(['nome_original' => trim($dados['nome_original']), 'updated_at' => now()]);
+        $data = $request->validated();
+        $previous = $solicitacao->status;
+        $solicitacao->update($data);
+        if (isset($data['status']) && $data['status'] !== $previous) {
+            $this->history->record($solicitacao, $previous, $data['status'], $data['motivo_encerramento'] ?? null);
+        }
 
-        if (! $atualizado) return response()->json(['message' => 'Anexo não encontrado.'], 404);
-
-        return response()->json(DB::table('solicitacao_anexos')->find($anexo));
-    }
-
-    public function excluirAnexo(Solicitacao $solicitacao, int $anexo): JsonResponse
-    {
-        $registro = DB::table('solicitacao_anexos')->where('id', $anexo)->where('solicitacao_id', $solicitacao->id)->first();
-        if (! $registro) return response()->json(['message' => 'Anexo não encontrado.'], 404);
-
-        Storage::disk('public')->delete($registro->caminho);
-        DB::table('solicitacao_anexos')->where('id', $anexo)->delete();
-
-        return response()->json(null, 204);
-    }
-
-    public function visualizarAnexo(Solicitacao $solicitacao, int $anexo)
-    {
-        $registro = $this->anexoDaSolicitacao($solicitacao, $anexo);
-        if (! $registro) return response()->json(['message' => 'Anexo não encontrado.'], 404);
-
-        $caminho = Storage::disk('public')->path($registro->caminho);
-        if (! is_file($caminho)) return response()->json(['message' => 'Arquivo não está mais disponível.'], 404);
-
-        return response()->file($caminho, ['Content-Type' => $registro->mime_type]);
-    }
-
-    public function baixarAnexo(Solicitacao $solicitacao, int $anexo)
-    {
-        $registro = $this->anexoDaSolicitacao($solicitacao, $anexo);
-        if (! $registro) return response()->json(['message' => 'Anexo não encontrado.'], 404);
-
-        $caminho = Storage::disk('public')->path($registro->caminho);
-        if (! is_file($caminho)) return response()->json(['message' => 'Arquivo não está mais disponível.'], 404);
-
-        return response()->download($caminho, $registro->nome_original, ['Content-Type' => $registro->mime_type]);
-    }
-
-    private function anexoDaSolicitacao(Solicitacao $solicitacao, int $anexo): ?object
-    {
-        return DB::table('solicitacao_anexos')->where('id', $anexo)->where('solicitacao_id', $solicitacao->id)->first();
+        return $this->success($solicitacao->fresh(), 'Solicitação atualizada com sucesso.');
     }
 }

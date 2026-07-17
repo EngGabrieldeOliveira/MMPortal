@@ -33,7 +33,7 @@ class PedidoController extends Controller
             $pedido->unsetRelation('cliente');
         });
 
-        return response()->json($pedidos);
+        return $this->success($pedidos);
     }
 
     public function store(Request $request): JsonResponse
@@ -49,26 +49,26 @@ class PedidoController extends Controller
             return $pedido;
         });
 
-        return response()->json($pedido, 201);
+        return $this->success($pedido, 'Pedido criado com sucesso.', 201);
     }
 
     public function show(Pedido $pedido): JsonResponse
     {
-        return response()->json($pedido);
+        return $this->success($pedido);
     }
 
     public function update(Request $request, Pedido $pedido): JsonResponse
     {
         $pedido->update($this->validated($request, true));
 
-        return response()->json($pedido->fresh());
+        return $this->success($pedido->fresh(), 'Pedido atualizado com sucesso.');
     }
 
     public function destroy(Pedido $pedido): JsonResponse
     {
         $pedido->delete();
 
-        return response()->json(null, 204);
+        return $this->success(null, 'Pedido removido com sucesso.');
     }
 
     /** @return array<string, mixed> */

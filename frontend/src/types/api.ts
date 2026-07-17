@@ -1,10 +1,8 @@
 // Global API Types
 export interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  errors?: Record<string, string[]>;
-  code?: string;
+  data: T;
+  message: string;
+  errors: Record<string, string[]>;
 }
 
 export interface ApiError extends Error {
