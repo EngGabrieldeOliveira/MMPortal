@@ -37,12 +37,13 @@ axiosInstance.interceptors.request.use(
 // Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => {
-    // Return the data from successful response
-    return response.data;
+    // Preserve the Axios response; request helpers unwrap `response.data`.
+    return response;
   },
   (error: AxiosError) => {
+    const responseData = error.response?.data as { message?: string } | undefined;
     const apiError: ApiError = new Error(
-      error.response?.statusText || 'Erro na requisição'
+      responseData?.message || error.response?.statusText || 'Erro na requisição'
     );
 
     apiError.status = error.response?.status;

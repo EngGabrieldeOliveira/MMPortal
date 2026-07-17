@@ -6,12 +6,15 @@ export type BadgeSize = 'sm' | 'md' | 'lg';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
+  /** Compatibilidade com telas que usam a nomenclatura de cor. */
+  color?: BadgeVariant | 'error';
   size?: BadgeSize;
   children: React.ReactNode;
 }
 
 export default function Badge({
   variant = 'default',
+  color,
   size = 'md',
   className,
   children,
@@ -21,7 +24,7 @@ export default function Badge({
     <span
       className={clsx(
         'badge',
-        `badge-${variant}`,
+        `badge-${color === 'error' ? 'danger' : color || variant}`,
         `badge-${size}`,
         className
       )}

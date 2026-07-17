@@ -7,6 +7,7 @@ export interface ButtonProps
   variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   loading?: boolean;
+  icon?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -14,6 +15,7 @@ export default function Button({
   variant = 'primary',
   size = 'md',
   loading = false,
+  icon,
   disabled = false,
   className,
   children,
@@ -34,6 +36,7 @@ export default function Button({
       {...props}
     >
       {loading && <Loader className="button-loader" size={16} />}
+      {!loading && icon}
       {children}
     </button>
   );

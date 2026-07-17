@@ -4,6 +4,18 @@ import Dashboard from '../pages/Dashboard/Dashboard';
 import ComponentShowcase from '../pages/ComponentShowcase';
 import Login from '../pages/Login/Login';
 import PrivateRoute from '../components/common/PrivateRoute';
+import Comercial from '../pages/Comercial';
+import ClientesList from '../pages/Comercial/ClientesList';
+import ClienteForm from '../pages/Comercial/ClienteForm';
+import PedidosList from '../pages/Comercial/PedidosList';
+import PedidoForm from '../pages/Comercial/PedidoForm';
+import SolicitacoesList from '../pages/Comercial/SolicitacoesList';
+import SolicitacaoForm from '../pages/Comercial/SolicitacaoForm';
+import OrcamentosList from '../pages/Comercial/OrcamentosList';
+import OrcamentoForm from '../pages/Comercial/OrcamentoForm';
+import ObrasList from '../pages/Obras/ObrasList';
+import ClienteDetail from '../pages/Comercial/ClienteDetail';
+import SolicitacaoDetail from '../pages/Comercial/SolicitacaoDetail';
 
 // Lazy loading for future modules
 // import Comercial from '../pages/Comercial/Comercial';
@@ -42,46 +54,72 @@ export const router = createBrowserRouter([
         element: <Dashboard />,
       },
       {
+        path: 'obras',
+        element: <ObrasList />,
+      },
+      {
         path: '__showcase',
         element: <ComponentShowcase />,
       },
-      // Modules will be added here
-      // {
-      //   path: 'comercial',
-      //   element: <Comercial />,
-      // },
-      // {
-      //   path: 'engenharia',
-      //   element: <Engenharia />,
-      // },
-      // {
-      //   path: 'producao',
-      //   element: <Producao />,
-      // },
-      // {
-      //   path: 'compras',
-      //   element: <Compras />,
-      // },
-      // {
-      //   path: 'estoque',
-      //   element: <Estoque />,
-      // },
-      // {
-      //   path: 'financeiro',
-      //   element: <Financeiro />,
-      // },
-      // {
-      //   path: 'rh',
-      //   element: <RH />,
-      // },
-      // {
-      //   path: 'agenda',
-      //   element: <Agenda />,
-      // },
-      // {
-      //   path: 'configuracoes',
-      //   element: <Configuracoes />,
-      // },
+      // Comercial Module
+      {
+        path: 'comercial',
+        element: <Comercial />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="/comercial/clientes" replace />,
+          },
+          {
+            path: 'clientes',
+            element: <ClientesList />,
+          },
+          {
+            path: 'clientes/novo',
+            element: <ClienteForm />,
+          },
+          {
+            path: 'clientes/:id/editar',
+            element: <ClienteForm />,
+          },
+          {
+            path: 'clientes/:id',
+            element: <ClienteDetail />,
+          },
+          {
+            path: 'solicitacoes',
+            element: <SolicitacoesList />,
+          },
+          {
+            path: 'solicitacoes/nova',
+            element: <SolicitacaoForm />,
+          },
+          {
+            path: 'solicitacoes/:id',
+            element: <SolicitacaoDetail />,
+          },
+          {
+            path: 'orcamentos',
+            element: <OrcamentosList />,
+          },
+          {
+            path: 'orcamentos/novo',
+            element: <OrcamentoForm />,
+          },
+          {
+            path: 'pedidos',
+            element: <PedidosList />,
+          },
+          {
+            path: 'pedidos/novo',
+            element: <PedidoForm />,
+          },
+          {
+            path: 'pedidos/:id/editar',
+            element: <PedidoForm />,
+          },
+        ],
+      },
     ],
   },
 

@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowUpDown, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import '../../styles/components/table.css';
 
@@ -20,6 +20,9 @@ export interface TableProps<T> {
   onRowClick?: (row: T) => void;
   pagination?: boolean;
   pageSize?: number;
+  actions?: boolean;
+  onEdit?: (row: T) => void;
+  onDelete?: (row: T) => void;
 }
 
 export default function Table<T extends Record<string, any>>({
@@ -31,6 +34,9 @@ export default function Table<T extends Record<string, any>>({
   onRowClick,
   pagination = true,
   pageSize = 10,
+  actions = false,
+  onEdit,
+  onDelete,
 }: TableProps<T>) {
   const [sortConfig, setSortConfig] = useState<{ key: keyof T; direction: 'asc' | 'desc' } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -76,11 +82,12 @@ export default function Table<T extends Record<string, any>>({
               {columns.map((col) => (
                 <th key={String(col.key)}>{col.label}</th>
               ))}
+              {actions && <th>Ações</th>}
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colSpan={columns.length} className="table-loading">
+              <td colSpan={columns.length + Number(actions)} className="table-loading">
                 Carregando...
               </td>
             </tr>
@@ -99,11 +106,12 @@ export default function Table<T extends Record<string, any>>({
               {columns.map((col) => (
                 <th key={String(col.key)}>{col.label}</th>
               ))}
+              {actions && <th>Ações</th>}
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td colSpan={columns.length} className="table-empty">
+              <td colSpan={columns.length + Number(actions)} className="table-empty">
                 {emptyMessage}
               </td>
             </tr>
@@ -143,6 +151,7 @@ export default function Table<T extends Record<string, any>>({
                   </div>
                 </th>
               ))}
+              {actions && <th>Ações</th>}
             </tr>
           </thead>
           <tbody>
@@ -157,6 +166,12 @@ export default function Table<T extends Record<string, any>>({
                     {col.render ? col.render(row[col.key], row) : row[col.key]}
                   </td>
                 ))}
+                {actions && (
+                  <td className="table-actions">
+                    {onEdit && <button type="button" className="table-action-button" aria-label="Editar" onClick={(event) => { event.stopPropagation(); onEdit(row); }}><Pencil size={16} /></button>}
+                    {onDelete && <button type="button" className="table-action-button table-action-button-danger" aria-label="Excluir" onClick={(event) => { event.stopPropagation(); onDelete(row); }}><Trash2 size={16} /></button>}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>

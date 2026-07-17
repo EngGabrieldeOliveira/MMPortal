@@ -35,17 +35,17 @@
 
 /* Color variants */
 .button-primary {
-  background-color: #2563eb;
+  background-color: #f97316;
   color: white;
 }
 
 .button-primary:hover:not(:disabled) {
-  background-color: #1d4ed8;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  background-color: #ea580c;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.25);
 }
 
 .button-primary:active:not(:disabled) {
-  background-color: #1e40af;
+  background-color: #c2410c;
 }
 
 .button-secondary {

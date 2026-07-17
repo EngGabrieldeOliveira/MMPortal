@@ -12,13 +12,13 @@
 .dashboard-title {
   font-size: 1.875rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #f8fafc;
   margin: 0 0 0.5rem 0;
 }
 
 .dashboard-subtitle {
   font-size: 0.875rem;
-  color: #64748b;
+  color: #94a3b8;
   margin: 0;
 }
 
@@ -34,8 +34,8 @@
 }
 
 .stat-card {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background-color: #18181b;
+  border: 1px solid #2a2a31;
   border-radius: 0.5rem;
   padding: 1.5rem;
   transition: all 0.2s ease;
@@ -57,7 +57,7 @@
 .stat-title {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #64748b;
+  color: #a1a1aa;
   margin: 0;
 }
 
@@ -80,7 +80,7 @@
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1e293b;
+  color: #f8fafc;
   margin: 0;
   line-height: 1.2;
 }
@@ -112,8 +112,8 @@
 
 /* Chart Container */
 .chart-container {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background-color: #18181b;
+  border: 1px solid #2a2a31;
   border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -127,7 +127,7 @@
 .chart-title {
   font-size: 1rem;
   font-weight: 600;
-  color: #1e293b;
+  color: #f8fafc;
   margin: 0;
 }
 
@@ -137,8 +137,8 @@
 
 /* Activity Container */
 .activity-container {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
+  background-color: #18181b;
+  border: 1px solid #2a2a31;
   border-radius: 0.5rem;
   overflow: hidden;
   display: flex;

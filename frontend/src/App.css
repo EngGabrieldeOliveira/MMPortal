@@ -1,42 +1,11 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
-  background: #0f172a;
+  margin: 0;
+  min-width: 320px;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  background: #09090b;
+  color: #f8fafc;
 }
 
-.app {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.card {
-  width: 500px;
-  padding: 50px;
-  text-align: center;
-  background: #1e293b;
-  border-radius: 15px;
-  color: white;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, .3);
-}
-
-.card h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
-}
-
-.card p {
-  color: #cbd5e1;
-  font-size: 20px;
-  margin-bottom: 15px;
-}
-
-.card small {
-  color: #38bdf8;
-}
+button, input, select { font: inherit; }
