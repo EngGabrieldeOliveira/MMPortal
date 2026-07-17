@@ -2,33 +2,32 @@
 
 ## Visão geral
 
-O MMPortal usa uma SPA React separada e uma API Laravel 13. A regra de negócio permanece no backend com Eloquent, Form Requests, Services e controllers por recurso.
+O MMPortal utiliza React/Vite separado de uma API Laravel 13. A regra de negócio reside no backend com Eloquent, Form Requests, Services e controllers por recurso.
 
-## Autenticação
+## Autenticação e autorização
 
-Laravel Sanctum emite tokens pessoais para o cliente `frontend`. As rotas privadas usam `auth:sanctum`; portanto `request()->user()` e `Auth::user()` identificam o usuário autenticado. O logout remove apenas `currentAccessToken()`, enquanto `tokens()->delete()` oferece revogação global futura.
+Laravel Sanctum emite Bearer Tokens para o frontend. As rotas privadas usam `auth:sanctum`; `request()->user()` e `Auth::user()` identificam o usuário autenticado. O logout remove apenas o token atual e `tokens()->delete()` permite revogação global.
 
-Tokens próprios, middleware `api.token`, `users.api_token` e a tabela `api_tokens` foram removidos. Sessões antigas não são migráveis porque o sistema anterior armazenava somente hashes; usuários devem autenticar novamente após a migration.
+`UserRole` contém os perfis iniciais. A infraestrutura RBAC inclui `permissions`, `role_permissions` e `user_permissions`; permissões individuais podem permitir ou negar uma permissão recebida do perfil. O middleware `permission:{chave}` e o Gate `permission` estão prontos para adoção incremental, sem restringir funcionalidades existentes.
 
-## Autorização
+## Auditoria e eventos
 
-`App\Enums\UserRole` centraliza os papéis iniciais: administrador, diretoria, comercial, engenharia, produção, compras, financeiro, RH e obras. `AppServiceProvider` registra Gates por domínio. Não há pacote de permissões externo: o modelo atual é suficiente para a primeira etapa e poderá evoluir para Policies por recurso sem alterar a autenticação.
+`audit_logs` registra criação, alteração, exclusão lógica e restauração dos registros críticos. Cada linha contém usuário, IP, User Agent, request ID, módulo, ação, valores anteriores e novos e referência polimórfica ao registro.
 
-## Fluxo comercial
+`administrative_events` registra login, logout, tentativa inválida, upload e exceção interna. `AdministrativeEventType` também normaliza os eventos de alteração de permissões, configuração e exportação para os módulos que forem criados futuramente. O canal `administrative` também grava logs diários em arquivo.
 
-- `SolicitacaoController`: listagem, cadastro, leitura e atualização.
-- `SolicitacaoAnexoController`: anexar, renomear, visualizar, baixar e remover documentos.
-- `OrcamentoController`: orçamento direto, conversão de solicitação, envio e decisão.
-- `OrdemServicoController`: criação de OS e atualização de etapas.
+UUID é utilizado nesses registros transversais para correlação e eventual exposição segura. As entidades de negócio preservam IDs numéricos e códigos existentes (`CLI`, `SOL`, `ORC`, `PED`, `OS`).
 
-As transações e transições mais sensíveis estão em `OrcamentoService`, `OrdemServicoService` e `StatusHistoryService`. Não há Repository genérico; os controllers usam Eloquent diretamente.
+## Dados e exclusão
+
+Clientes, solicitações, orçamentos, pedidos, ordens de serviço e anexos usam Soft Delete. Nenhuma rota atual executa exclusão física ou remove o arquivo armazenado. Consultas Eloquent normais ocultam registros removidos e preservam o histórico.
 
 ## Contrato HTTP
 
-Respostas JSON usam sempre:
+Respostas JSON seguem:
 
 ```json
 { "data": {}, "message": "", "errors": {} }
 ```
 
-Erros de validação e autenticação também respeitam esse formato. Arquivos visualizados ou baixados são exceções deliberadas, pois retornam conteúdo binário.
+Validação, autenticação, autorização, registros ausentes e erros internos seguem o mesmo formato. Arquivos visualizados ou baixados retornam conteúdo binário por definição.

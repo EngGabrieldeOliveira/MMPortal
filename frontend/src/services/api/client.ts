@@ -49,6 +49,7 @@ axiosInstance.interceptors.response.use(
     apiError.status = error.response?.status;
     apiError.code = error.code;
     apiError.data = error.response?.data;
+    apiError.requestId = error.response?.headers?.['x-request-id'];
 
     // Handle specific status codes
     if (error.response?.status === 401) {

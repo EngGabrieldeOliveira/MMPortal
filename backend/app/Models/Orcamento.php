@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Orcamento extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = ['solicitacao_id', 'cliente_id', 'numero', 'versao', 'status', 'valor_total', 'validade_ate', 'enviado_em', 'decidido_em', 'observacoes'];
 
     protected $casts = ['valor_total' => 'float', 'validade_ate' => 'date:Y-m-d', 'enviado_em' => 'datetime', 'decidido_em' => 'datetime'];

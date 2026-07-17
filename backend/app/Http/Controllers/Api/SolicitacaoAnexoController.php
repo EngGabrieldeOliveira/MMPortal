@@ -7,14 +7,18 @@ use App\Http\Requests\Solicitacao\RenameSolicitacaoAnexoRequest;
 use App\Http\Requests\Solicitacao\StoreSolicitacaoAnexosRequest;
 use App\Models\Solicitacao;
 use App\Models\SolicitacaoAnexo;
+use App\Services\AdministrativeEventService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class SolicitacaoAnexoController extends Controller
 {
+    public function __construct(private readonly AdministrativeEventService $events) {}
+
     public function store(StoreSolicitacaoAnexosRequest $request, Solicitacao $solicitacao): JsonResponse
     {
         $anexos = collect($request->file('arquivos'))->map(fn ($file) => $solicitacao->anexos()->create(['nome_original' => $file->getClientOriginalName(), 'caminho' => $file->store("solicitacoes/{$solicitacao->id}", 'public'), 'mime_type' => $file->getMimeType(), 'tamanho' => $file->getSize()]));
+        $this->events->record('file.upload', 'info', 'comercial.solicitacoes', 'Documentos anexados à solicitação.', ['solicitacao_id' => $solicitacao->id, 'total' => $anexos->count()]);
 
         return $this->success($anexos, 'Documentos anexados com sucesso.', 201);
     }
@@ -30,7 +34,6 @@ class SolicitacaoAnexoController extends Controller
     public function destroy(Solicitacao $solicitacao, SolicitacaoAnexo $anexo): JsonResponse
     {
         abort_unless($anexo->solicitacao_id === $solicitacao->id, 404);
-        Storage::disk('public')->delete($anexo->caminho);
         $anexo->delete();
 
         return $this->success(null, 'Documento removido com sucesso.');
