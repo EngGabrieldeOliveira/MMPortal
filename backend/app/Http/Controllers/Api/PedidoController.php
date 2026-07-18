@@ -29,7 +29,7 @@ class PedidoController extends Controller
             ->paginate($limit);
 
         $pedidos->getCollection()->each(function (Pedido $pedido): void {
-            $pedido->setAttribute('cliente_nome', $pedido->cliente->nome);
+            $pedido->setAttribute('cliente_nome', $pedido->cliente?->getAttribute('nome'));
             $pedido->unsetRelation('cliente');
         });
 

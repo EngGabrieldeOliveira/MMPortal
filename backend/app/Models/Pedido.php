@@ -26,11 +26,13 @@ class Pedido extends Model
         'data_entrega_real' => 'date:Y-m-d',
     ];
 
+    /** @return BelongsTo<Cliente, $this> */
     public function cliente(): BelongsTo
     {
         return $this->belongsTo(Cliente::class);
     }
 
+    /** @return HasMany<OrdemServico, $this> */
     public function ordensServico(): HasMany
     {
         return $this->hasMany(OrdemServico::class);

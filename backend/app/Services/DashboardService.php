@@ -163,13 +163,14 @@ class DashboardService
             ->map(function (Pedido $order) use ($today): array {
                 $due = $order->data_entrega_prevista;
                 $status = $due && $due->lt($today) ? 'late' : ($due && $due->lte($today->addDays(2)) ? 'attention' : 'on-track');
+                $hasServiceOrder = $order->ordensServico->isNotEmpty();
                 $serviceOrder = $order->ordensServico->first();
 
                 return [
                     'id' => $order->numero,
-                    'name' => $serviceOrder?->titulo ?? "Obra {$order->numero}",
+                    'name' => $hasServiceOrder ? $serviceOrder->titulo : "Obra {$order->numero}",
                     'client' => $order->cliente?->empresa ?: $order->cliente?->nome ?: 'Cliente não informado',
-                    'stage' => $serviceOrder?->status ? str_replace('_', ' ', $serviceOrder->status) : str_replace('_', ' ', $order->status),
+                    'stage' => $hasServiceOrder && $serviceOrder->status ? str_replace('_', ' ', $serviceOrder->status) : str_replace('_', ' ', $order->status),
                     'progress' => $this->workProgress($order->status),
                     'due_label' => $due ? $due->format('d/m/Y') : 'Prazo não informado',
                     'status' => $status,

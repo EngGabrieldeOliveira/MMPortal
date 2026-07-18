@@ -94,10 +94,10 @@ class ClienteService
                 unset($contact['id']);
                 $model = $id ? $cliente->contatos()->whereKey($id)->firstOrFail() : $cliente->contatos()->make();
                 $model->fill($contact);
-                $model->cliente_id = $cliente->id;
+                $model->setAttribute('cliente_id', $cliente->id);
                 $model->save();
             }
-        } elseif (! $cliente->contatos()->exists() && ($data['email'] ?? null || $data['telefone'] ?? null)) {
+        } elseif (! $cliente->contatos()->exists() && (($data['email'] ?? null) || ($data['telefone'] ?? null))) {
             $cliente->contatos()->create(['nome' => $cliente->nome, 'email' => $data['email'] ?? null, 'telefone' => $data['telefone'] ?? null, 'is_principal' => true]);
         }
         if (array_key_exists('responsavel_id', $data)) {

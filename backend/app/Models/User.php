@@ -25,9 +25,10 @@ class User extends Authenticatable
     {
         $roleValues = array_map(fn (UserRole|string $role) => $role instanceof UserRole ? $role->value : $role, $roles);
 
-        return in_array($this->role instanceof UserRole ? $this->role->value : $this->role, $roleValues, true);
+        return in_array($this->roleValue(), $roleValues, true);
     }
 
+    /** @return BelongsToMany<Permission, $this> */
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'user_permissions')->withPivot('allowed')->withTimestamps();
@@ -41,12 +42,12 @@ class User extends Authenticatable
 
         $override = $this->permissions()->where('key', $permission)->first();
         if ($override) {
-            return (bool) $override->pivot->allowed;
+            return (bool) $override->pivot->getAttribute('allowed');
         }
 
         return DB::table('role_permissions')
             ->join('permissions', 'permissions.id', '=', 'role_permissions.permission_id')
-            ->where('role_permissions.role', $this->role?->value ?? UserRole::Comercial->value)
+            ->where('role_permissions.role', $this->roleValue())
             ->where('permissions.key', $permission)
             ->exists();
     }
@@ -63,5 +64,12 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => UserRole::class,
         ];
+    }
+
+    private function roleValue(): string
+    {
+        $role = $this->getRawOriginal('role');
+
+        return is_string($role) ? $role : UserRole::Comercial->value;
     }
 }

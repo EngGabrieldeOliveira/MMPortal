@@ -27,7 +27,8 @@ class OrdemServicoService
 
     public function updateStage(OrdemServicoEtapa $etapa, array $data): OrdemServicoEtapa
     {
-        if ($etapa->tipo === 'instalacao' && $data['status'] === 'em_andamento' && $etapa->ordemServico->etapas()->where('tipo', 'fabricacao')->where('status', '!=', 'concluida')->exists()) {
+        $ordemServico = $etapa->ordemServico;
+        if ($etapa->tipo === 'instalacao' && $data['status'] === 'em_andamento' && $ordemServico instanceof OrdemServico && $ordemServico->etapas()->where('tipo', 'fabricacao')->where('status', '!=', 'concluida')->exists()) {
             abort(422, 'A fabricação deve ser concluída antes de iniciar a instalação.');
         }
         $previous = $etapa->status;

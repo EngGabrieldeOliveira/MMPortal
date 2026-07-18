@@ -11,6 +11,7 @@ use App\Models\Cliente;
 use App\Services\Cliente\ClienteService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class ClienteController extends Controller
 {
@@ -19,6 +20,7 @@ class ClienteController extends Controller
     public function index(Request $request): JsonResponse
     {
         $this->authorize('viewAny', Cliente::class);
+        /** @var LengthAwarePaginator<int, Cliente> $clientes */
         $clientes = $this->clientes->paginate($request->only(['search', 'nome', 'fantasia', 'cnpj', 'cidade', 'contato', 'telefone', 'status', 'classificacao', 'sort', 'direction', 'limit']));
         $clientes->setCollection(ClienteResource::collection($clientes->getCollection())->collection);
 

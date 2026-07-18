@@ -15,7 +15,7 @@ class OrcamentoService
     public function create(array $data, ?Solicitacao $solicitacao = null): Orcamento
     {
         return DB::transaction(function () use ($data, $solicitacao): Orcamento {
-            $orcamento = Orcamento::create(['solicitacao_id' => $solicitacao?->id, 'cliente_id' => $solicitacao?->cliente_id ?? $data['cliente_id'], 'numero' => 'ORC-'.str_pad((string) ((int) Orcamento::max('id') + 1), 6, '0', STR_PAD_LEFT), 'versao' => $solicitacao ? ((int) $solicitacao->orcamentos()->max('versao')) + 1 : 1, 'validade_ate' => $data['validade_ate'] ?? null, 'observacoes' => $data['observacoes'] ?? null]);
+            $orcamento = Orcamento::create(['solicitacao_id' => $solicitacao?->id, 'cliente_id' => $solicitacao ? $solicitacao->cliente_id : $data['cliente_id'], 'numero' => 'ORC-'.str_pad((string) ((int) Orcamento::max('id') + 1), 6, '0', STR_PAD_LEFT), 'versao' => $solicitacao ? ((int) $solicitacao->orcamentos()->max('versao')) + 1 : 1, 'validade_ate' => $data['validade_ate'] ?? null, 'observacoes' => $data['observacoes'] ?? null]);
             $total = 0;
             foreach ($data['itens'] as $index => $item) {
                 $value = $item['quantidade'] * $item['valor_unitario'];
@@ -62,7 +62,7 @@ class OrcamentoService
             $orcamento->load('itens');
             $pedido = Pedido::create(['numero' => 'PED-'.str_pad((string) ((int) Pedido::max('id') + 1), 6, '0', STR_PAD_LEFT), 'cliente_id' => $orcamento->cliente_id, 'orcamento_id' => $orcamento->id, 'valor_total' => $orcamento->valor_total, 'quantidade_itens' => $orcamento->itens->count(), 'status' => 'aguardando_pcp', 'data_pedido' => now()->toDateString(), 'observacoes' => $orcamento->observacoes]);
             foreach ($orcamento->itens as $item) {
-                $pedido->itens()->create($item->only(['ordem', 'descricao', 'quantidade', 'unidade', 'valor_unitario', 'valor_total', 'especificacoes']) + ['orcamento_item_id' => $item->id]);
+                $pedido->itens()->create($item->only(['ordem', 'descricao', 'quantidade', 'unidade', 'valor_unitario', 'valor_total', 'especificacoes']) + ['orcamento_item_id' => $item->getAttribute('id')]);
             }
             $orcamento->update(['status' => 'aceito', 'decidido_em' => now()]);
             $orcamento->solicitacao?->update(['status' => 'encerrada']);
