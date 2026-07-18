@@ -18,6 +18,7 @@ Todas as respostas JSON seguem `{ "data": {}, "message": "", "errors": {} }`.
 composer install
 php artisan migrate
 php artisan db:seed
+composer analyse
 php artisan test
 vendor/bin/pint --test
 ```

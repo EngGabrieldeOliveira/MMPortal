@@ -1,0 +1,35 @@
+# Sistema operacional e IDEs
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.cursor/
+.codex/
+
+# Configurações locais e resultados de teste
+.env
+.env.*
+!.env.example
+.phpunit.result.cache
+.phpunit.cache/
+
+# Logs e dependências locais em subprojetos
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+**/vendor/
+**/node_modules/
+**/dist/
+
+# Estado gerado em runtime
+**/storage/logs/
+**/storage/framework/cache/
+**/storage/framework/sessions/
+**/storage/framework/views/
+**/bootstrap/cache/
+
+# Diagnósticos temporários de análise estática
+**/phpstan-*-output.txt
+**/phpstan-output.txt
+**/phpstan-test.php

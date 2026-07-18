@@ -18,3 +18,7 @@ ERP operacional da Marques Metais para solicitações, orçamentos, pedidos e or
 ## Infraestrutura corporativa
 
 A Sprint 04 adiciona auditoria persistente, eventos administrativos, Soft Delete, RBAC extensível e tratamento global de exceções. Consulte [arquitetura](docs/ARCHITECTURE.md), [decisões](docs/DECISIONS.md), [sprints](docs/SPRINTS.md) e [revisão técnica](docs/CTO_REVIEW.md).
+
+## Qualidade
+
+O fluxo oficial de validação, incluindo Larastan/PHPStan no nível 5, está documentado em [QUALITY.md](docs/QUALITY.md).
