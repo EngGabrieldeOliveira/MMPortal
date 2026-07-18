@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
@@ -53,6 +54,8 @@ class AuthController extends Controller
 
     private function userData(User $user): array
     {
-        return ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => $user->role];
+        $role = $user->getAttribute('role');
+
+        return ['id' => $user->id, 'name' => $user->name, 'email' => $user->email, 'role' => $role instanceof UserRole ? $role->value : UserRole::Comercial->value];
     }
 }
