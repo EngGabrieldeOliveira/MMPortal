@@ -1,0 +1,37 @@
+/* Sprint 05C — Cockpit executivo compacto e orientado à decisão. */
+.cockpit-header { align-items: center; margin-bottom: 1.1rem; min-height: 74px; }
+.cockpit-header h1 { font-size: clamp(1.55rem, 2.4vw, 2rem); }
+.cockpit-subtitle { font-size: .82rem; margin-top: .3rem; }
+.cockpit-header-actions { align-items: flex-end; display: flex; flex-direction: column; gap: .5rem; }
+.cockpit-quick-actions { display: flex; flex-wrap: wrap; gap: .45rem; justify-content: flex-end; }
+.cockpit-quick-actions a, .cockpit-quick-actions button { align-items: center; background: #202632; border: 1px solid #343c49; border-radius: .42rem; color: #e8edf6; cursor: pointer; display: inline-flex; font-family: inherit; font-size: .7rem; font-weight: 700; gap: .35rem; min-height: 31px; padding: .38rem .58rem; text-decoration: none; }
+.cockpit-quick-actions a:first-child { border-color: #f97316; color: #ffad6d; }
+.cockpit-quick-actions a:hover { background: #2a313e; color: #fff; }
+.cockpit-quick-actions button:disabled { cursor: not-allowed; opacity: .46; }
+.cockpit-header-meta { font-size: .68rem; }
+.cockpit-header-meta span { padding: .3rem .55rem; }
+.cockpit-kpi-grid { gap: .8rem; }
+.cockpit-kpi { border-radius: .65rem; box-shadow: 0 12px 30px rgba(0, 0, 0, .12); min-height: 142px; padding: .95rem; }
+.cockpit-kpi strong { font-size: clamp(1.28rem, 1.65vw, 1.55rem); margin: .78rem 0 .42rem; }
+.cockpit-kpi-description { min-height: 1.9em; }
+.cockpit-kpi-trend { align-items: center; display: inline-flex; font-size: .65rem; margin-top: .42rem; }
+.cockpit-top-grid { grid-template-columns: minmax(480px, 1.45fr) minmax(350px, .85fr); }
+.cockpit-panel { border-radius: .7rem; box-shadow: 0 14px 35px rgba(0, 0, 0, .14); }
+.cockpit-panel-heading { padding: 1rem 1.1rem; }
+.cockpit-attention-item { align-items: center; gap: .9rem; padding: .78rem 1.1rem; }
+.cockpit-attention-content { flex: 1; }
+.cockpit-attention-content p { max-width: 65ch; }
+.cockpit-open-button { align-items: center; background: #242b37; border: 1px solid #3b4555; border-radius: .4rem; color: #f4f7fb; display: inline-flex; flex: 0 0 auto; font-size: .68rem; font-weight: 700; gap: .25rem; padding: .42rem .55rem; text-decoration: none; }
+.cockpit-open-button:hover { border-color: #f97316; color: #ffad6d; }
+.cockpit-chart .cockpit-panel-heading { min-height: 77px; }
+.cockpit-chart-indicators { border-bottom: 1px solid #292d35; display: grid; grid-template-columns: repeat(3, 1fr); }
+.cockpit-chart-indicators div { border-right: 1px solid #292d35; padding: .55rem .85rem; }
+.cockpit-chart-indicators div:last-child { border-right: 0; }
+.cockpit-chart-indicators span { color: #7f8a9d; display: block; font-size: .62rem; text-transform: uppercase; }
+.cockpit-chart-indicators strong { color: #dfe7f3; display: block; font-size: .73rem; margin-top: .16rem; white-space: nowrap; }
+.cockpit-bar-chart, .cockpit-line-chart { height: 168px; }
+.cockpit-bar-track, .cockpit-line-chart svg { height: 122px; }
+.cockpit-movement-title { align-items: center; display: flex; gap: .45rem; }
+.cockpit-movement-title span { background: #232a36; border-radius: 999px; color: #aeb9ca; font-size: .55rem; font-weight: 700; padding: .18rem .37rem; text-transform: uppercase; }
+@media (max-width: 1120px) { .cockpit-top-grid { grid-template-columns: 1fr; }.cockpit-header-actions { align-items: flex-start; }.cockpit-quick-actions { justify-content: flex-start; } }
+@media (max-width: 760px) { .cockpit-header { align-items: flex-start; min-height: auto; }.cockpit-attention-item { align-items: flex-start; flex-wrap: wrap; }.cockpit-open-button { margin-left: 40px; }.cockpit-chart-indicators div { padding: .5rem .55rem; }.cockpit-chart-indicators strong { font-size: .66rem; overflow: hidden; text-overflow: ellipsis; }.cockpit-quick-actions { gap: .35rem; }.cockpit-quick-actions a, .cockpit-quick-actions button { font-size: .64rem; } }

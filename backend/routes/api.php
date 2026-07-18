@@ -2,11 +2,13 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClienteController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\OrcamentoController;
 use App\Http\Controllers\Api\OrdemServicoController;
 use App\Http\Controllers\Api\PedidoController;
 use App\Http\Controllers\Api\SolicitacaoAnexoController;
 use App\Http\Controllers\Api\SolicitacaoController;
+use App\Http\Controllers\Api\UsuarioOpcaoController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function (): void {
@@ -19,7 +21,12 @@ Route::prefix('auth')->group(function (): void {
 });
 
 Route::middleware('auth:sanctum')->prefix('comercial')->group(function (): void {
+    Route::get('usuarios/opcoes', [UsuarioOpcaoController::class, 'index']);
     Route::apiResource('clientes', ClienteController::class);
+    Route::patch('clientes/{cliente}/status', [ClienteController::class, 'updateStatus']);
+    Route::get('clientes/{cliente}/contatos', [ClienteController::class, 'contatos']);
+    Route::get('clientes/{cliente}/enderecos', [ClienteController::class, 'enderecos']);
+    Route::get('clientes/{cliente}/documentos', [ClienteController::class, 'documentos']);
     Route::apiResource('pedidos', PedidoController::class);
 
     Route::get('solicitacoes', [SolicitacaoController::class, 'index']);
@@ -41,3 +48,5 @@ Route::middleware('auth:sanctum')->prefix('comercial')->group(function (): void 
     Route::post('pedidos/{pedido}/ordens-servico', [OrdemServicoController::class, 'store']);
     Route::patch('ordens-servico-etapas/{etapa}', [OrdemServicoController::class, 'updateStage']);
 });
+
+Route::middleware('auth:sanctum')->get('dashboard', [DashboardController::class, 'index']);

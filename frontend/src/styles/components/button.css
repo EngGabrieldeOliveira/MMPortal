@@ -49,19 +49,25 @@
 }
 
 .button-secondary {
-  background-color: #f1f5f9;
-  color: #1e293b;
-  border: 1px solid #e2e8f0;
+  background-color: #262c36;
+  color: #e8edf6;
+  border: 1px solid #3a4352;
 }
 
 .button-secondary:hover:not(:disabled) {
-  background-color: #e2e8f0;
-  border-color: #cbd5e1;
+  background-color: #303846;
+  border-color: #4b586b;
 }
 
 .button-secondary:active:not(:disabled) {
-  background-color: #cbd5e1;
+  background-color: #202631;
 }
+
+.button-warning { background-color: #f97316; color: white; }
+.button-warning:hover:not(:disabled) { background-color: #ea580c; box-shadow: 0 4px 12px rgba(249, 115, 22, .25); }
+
+.button-success { background-color: #059669; color: white; }
+.button-success:hover:not(:disabled) { background-color: #047857; box-shadow: 0 4px 12px rgba(5, 150, 105, .25); }
 
 .button-danger {
   background-color: #dc2626;
@@ -79,15 +85,15 @@
 
 .button-ghost {
   background-color: transparent;
-  color: #1e293b;
+  color: #cbd5e1;
 }
 
 .button-ghost:hover:not(:disabled) {
-  background-color: #f1f5f9;
+  background-color: #222936;
 }
 
 .button-ghost:active:not(:disabled) {
-  background-color: #e2e8f0;
+  background-color: #2a3340;
 }
 
 /* Disabled state */

@@ -1,140 +1,26 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Building2, Plus, Search, UserRound } from 'lucide-react';
-import { Button, Input, Select, Table, Badge, EmptyState } from '../../components/ui';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Eye, Pencil, Plus, Search, Trash2 } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Badge, Button, EmptyState, Input, Select, Table } from '../../components/ui';
 import type { TableColumn } from '../../components/ui';
-import { useApi } from '../../hooks/useApi';
-import * as clienteService from '../../services/comercial/cliente';
-import type { Cliente } from '../../types/comercial';
+import { useAuth } from '../../context/AuthContext';
+import { clientesService } from '../../services/clientes';
+import type { Classificacao, ClienteFilters, ClienteResumo, PaginatedClientes } from '../../types/clientes';
+import type { ApiError } from '../../types/api';
 import '../../styles/comercial.css';
+import '../../styles/clientes-module.css';
+
+const canManage = (role?: string) => ['administrador', 'diretoria', 'comercial'].includes(role ?? '');
+const badgeColor = (status: string): 'success' | 'error' | 'warning' => status === 'ativo' ? 'success' : status === 'bloqueado' ? 'warning' : 'error';
+const displayName = (client: ClienteResumo) => client.tipo_pessoa === 'fisica' ? client.razao_social : client.nome_fantasia || client.razao_social;
 
 export default function ClientesList() {
-  const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [status, setStatus] = useState('');
-
-  // Carregar clientes
-  const carregarClientes = useCallback(() => clienteService.listarClientes({
-      page: currentPage,
-      limit: 10,
-      search: searchTerm,
-      status,
-    }), [currentPage, searchTerm, status]);
-  const { data: clientesData, loading, error, refetch } = useApi(carregarClientes);
-
-  // Recarregar quando mudar página ou termo de busca
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  const handleDelete = async (id: number) => {
-    if (window.confirm('Tem certeza que deseja deletar este cliente?')) {
-      try {
-        await clienteService.deletarCliente(id);
-        refetch();
-      } catch {
-        alert('Erro ao deletar cliente');
-      }
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    const colors: Record<string, 'success' | 'warning' | 'error'> = {
-      ativo: 'success',
-      inativo: 'error',
-      suspenso: 'error',
-    };
-    return colors[status] || 'warning';
-  };
-
-  const columns: TableColumn<Cliente>[] = [
-    { key: 'tipo', label: 'Tipo', render: (tipo: Cliente['tipo']) => <span className="cliente-tipo-icon" title={tipo === 'juridica' ? 'Pessoa jurídica' : 'Pessoa física'}>{tipo === 'juridica' ? <Building2 size={17} /> : <UserRound size={17} />}</span> },
-    { key: 'nome', label: 'Nome', render: (nome: string) => <span className="cliente-nome">{nome}</span> },
-    { key: 'documento', label: 'Documento', render: (documento?: string) => <span className="cliente-secundario">{documento || '—'}</span> },
-    { key: 'cidade', label: 'Localização', render: (_cidade: string, cliente: Cliente) => <span className="cliente-secundario">{cliente.cidade} - {cliente.estado}</span> },
-    { key: 'status', label: 'Status', render: (status: string) => <Badge color={getStatusColor(status)}>{status}</Badge> },
-  ];
-
-  if (loading) return <div style={{ padding: '2rem' }}>Carregando...</div>;
-
-  return (
-    <div className="comercial-container">
-      <div className="comercial-header">
-        <div>
-          <h1>Clientes</h1>
-          <p>Gerenciamento de clientes da empresa</p>
-        </div>
-        <Button
-          variant="primary"
-          onClick={() => navigate('/comercial/clientes/novo')}
-          icon={<Plus size={20} />}
-        >
-          Novo Cliente
-        </Button>
-      </div>
-
-      {error && (
-        <div className="error-message">
-          Erro ao carregar clientes: {error.message}
-        </div>
-      )}
-
-      <div className="comercial-search">
-        <Input
-          type="text"
-          placeholder="Buscar por nome, email ou empresa..."
-          value={searchTerm}
-          onChange={handleSearch}
-          icon={<Search size={20} />}
-        />
-        <Select value={status} onChange={(event) => { setStatus(event.target.value); setCurrentPage(1); }} options={[{ value: '', label: 'Todos os status' }, { value: 'ativo', label: 'Ativos' }, { value: 'inativo', label: 'Inativos' }, { value: 'suspenso', label: 'Suspensos' }]} />
-      </div>
-
-      {clientesData?.data && clientesData.data.length > 0 ? (
-        <Table
-          columns={columns}
-          data={clientesData.data}
-          keyField="id"
-          pagination={false}
-          onRowClick={(cliente: Cliente) => navigate(`/comercial/clientes/${cliente.id}`)}
-          onEdit={(cliente: Cliente) => navigate(`/comercial/clientes/${cliente.id}`)}
-          onDelete={(cliente: Cliente) => handleDelete(cliente.id)}
-          actions
-        />
-      ) : (
-        <EmptyState
-          title="Nenhum cliente encontrado"
-          description={searchTerm ? 'Tente refinar sua busca' : 'Crie seu primeiro cliente para começar'}
-          action={{ label: 'Novo Cliente', onClick: () => navigate('/comercial/clientes/novo') }}
-        />
-      )}
-
-      {/* Pagination */}
-      {clientesData && clientesData.last_page > 1 && (
-        <div className="pagination">
-          <Button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            Anterior
-          </Button>
-          <span className="pagination-info">
-            Página {currentPage} de {clientesData.last_page}
-          </span>
-          <Button
-            disabled={currentPage === clientesData.last_page}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            Próximo
-          </Button>
-        </div>
-      )}
-    </div>
-  );
+  const navigate = useNavigate(); const { user } = useAuth(); const [params, setParams] = useSearchParams(); const [data, setData] = useState<PaginatedClientes | null>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState<ApiError | null>(null); const [deleting, setDeleting] = useState<number | null>(null);
+  const filters = useMemo<ClienteFilters>(() => ({ page: Number(params.get('page') || 1), limit: 15, search: params.get('search') || undefined, status: params.get('status') || undefined, cidade: params.get('cidade') || undefined, classificacao: params.get('classificacao') || undefined, sort: (params.get('sort') as ClienteFilters['sort']) || 'created_at', direction: (params.get('direction') as ClienteFilters['direction']) || 'desc' }), [params]);
+  const load = useCallback(async () => { setLoading(true); setError(null); try { setData(await clientesService.listar(filters)); } catch (caught) { setError(caught as ApiError); } finally { setLoading(false); } }, [filters]);
+  useEffect(() => { void load(); }, [load]);
+  const setFilter = (key: string, value: string) => { const next = new URLSearchParams(params); if (value) next.set(key, value); else next.delete(key); if (key !== 'page') next.set('page', '1'); setParams(next); };
+  const remove = async (client: ClienteResumo) => { if (!window.confirm(`Excluir ${displayName(client)}? O histórico será preservado.`)) return; setDeleting(client.id); try { await clientesService.excluir(client.id); await load(); } catch (caught) { setError(caught as ApiError); } finally { setDeleting(null); } };
+  const columns: TableColumn<ClienteResumo>[] = [{ key: 'codigo', label: 'Código', sortable: true }, { key: 'razao_social', label: 'Nome', sortable: true, render: (_value, row) => <span className="cliente-nome">{displayName(row)}</span> }, { key: 'endereco_cobranca', label: 'Cidade', render: (value) => value ? `${value.cidade} - ${value.estado}` : '—' }, { key: 'segmento', label: 'Segmento', render: (value) => value || '—' }, { key: 'classificacoes', label: 'Classificações', render: (value) => <div className="clientes-classifications">{(value as Classificacao[] | undefined)?.map((item) => <span className="clientes-classification" key={item.chave}>{item.nome}</span>) || '—'}</div> }, { key: 'status', label: 'Status', sortable: true, render: (value) => <Badge color={badgeColor(value)}>{value}</Badge> }, { key: 'ultimo_pedido_realizado', label: 'Último pedido', render: (value) => value ? new Date(value).toLocaleDateString('pt-BR') : 'Sem pedido' }, { key: 'responsavel', label: 'Responsável', render: (_value, row) => row.responsavel?.name || 'Sem responsável' }, { key: 'id', label: 'Ações', render: (_value, row) => <div className="clientes-table-actions"><button className="clientes-icon-btn" onClick={(event) => { event.stopPropagation(); navigate(`/comercial/clientes/${row.id}`); }} title="Visualizar"><Eye size={15} /></button>{canManage(user?.role) && <button className="clientes-icon-btn" onClick={(event) => { event.stopPropagation(); navigate(`/comercial/clientes/${row.id}/editar`); }} title="Editar"><Pencil size={15} /></button>}{canManage(user?.role) && <button className="clientes-icon-btn clientes-icon-btn-danger" disabled={deleting === row.id} onClick={(event) => { event.stopPropagation(); void remove(row); }} title="Excluir"><Trash2 size={15} /></button>}</div> }];
+  return <div className="comercial-container clientes-module"><header className="clientes-header"><div><h1>Clientes</h1><p>Cadastros comerciais, fornecedores e transportadoras.</p></div>{canManage(user?.role) && <Button icon={<Plus size={18} />} onClick={() => navigate('/comercial/clientes/novo')}>Novo cliente</Button>}</header><section className="clientes-toolbar"><Input value={params.get('search') || ''} onChange={(event) => setFilter('search', event.target.value)} placeholder="Buscar nome, razão social, fantasia, CPF/CNPJ ou contato" icon={<Search size={17} />} /><Select value={params.get('status') || ''} onChange={(event) => setFilter('status', event.target.value)} options={[{ value: '', label: 'Todos os status' }, { value: 'ativo', label: 'Ativo' }, { value: 'inativo', label: 'Inativo' }, { value: 'bloqueado', label: 'Bloqueado' }]} /><Input value={params.get('cidade') || ''} onChange={(event) => setFilter('cidade', event.target.value)} placeholder="Cidade" /><Select value={params.get('classificacao') || ''} onChange={(event) => setFilter('classificacao', event.target.value)} options={[{ value: '', label: 'Todas as classificações' }, { value: 'cliente', label: 'Cliente' }, { value: 'fornecedor', label: 'Fornecedor' }, { value: 'transportadora', label: 'Transportadora' }]} /></section>{error && <div className="clientes-feedback"><span>{error.message}</span><Button size="sm" variant="secondary" onClick={() => void load()}>Tentar novamente</Button></div>}{loading ? <div className="clientes-skeleton" /> : data?.data.length ? <><Table columns={columns} data={data.data} keyField="id" pagination={false} onRowClick={(row) => navigate(`/comercial/clientes/${row.id}`)} /><div className="clientes-pagination"><span>Página {data.current_page} de {data.last_page} · {data.total} registros</span><Button size="sm" variant="secondary" disabled={data.current_page === 1} onClick={() => setFilter('page', String(data.current_page - 1))}>Anterior</Button><Button size="sm" variant="secondary" disabled={data.current_page === data.last_page} onClick={() => setFilter('page', String(data.current_page + 1))}>Próxima</Button></div></> : <EmptyState title="Nenhum cliente encontrado" description="Ajuste os filtros ou crie um novo cadastro." action={canManage(user?.role) ? { label: 'Novo cliente', onClick: () => navigate('/comercial/clientes/novo') } : undefined} />}</div>;
 }

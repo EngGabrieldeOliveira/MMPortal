@@ -132,9 +132,9 @@ export default function Login() {
               Credenciais de teste:
               <br />
               <small>
-                Email: <strong>admin@mmportal.test</strong>
+                Email: <strong>admin@mmportal.local</strong>
                 <br />
-                Senha: <strong>password</strong>
+                Senha: <strong>admin123</strong>
               </small>
             </p>
           </div>

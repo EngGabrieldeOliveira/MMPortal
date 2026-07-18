@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use App\Enums\UserRole;
 use App\Models\Cliente;
+use App\Models\ClienteContato;
+use App\Models\ClienteDocumento;
+use App\Models\ClienteEndereco;
 use App\Models\Orcamento;
 use App\Models\OrdemServico;
 use App\Models\Pedido;
@@ -29,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        foreach ([Cliente::class, Solicitacao::class, Orcamento::class, Pedido::class, OrdemServico::class, SolicitacaoAnexo::class] as $model) {
+        foreach ([Cliente::class, ClienteContato::class, ClienteEndereco::class, ClienteDocumento::class, Solicitacao::class, Orcamento::class, Pedido::class, OrdemServico::class, SolicitacaoAnexo::class] as $model) {
             $model::observe(AuditableObserver::class);
         }
 
